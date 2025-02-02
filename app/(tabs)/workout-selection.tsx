@@ -3,10 +3,9 @@ import axios from "axios";
 import { router } from "expo-router";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, TextInput } from "react-native";
+import { StyleSheet, TextInput, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Text, View, YStack } from 'tamagui';
-
 
 interface IFormInput {
     wants: string,
@@ -14,16 +13,11 @@ interface IFormInput {
     dislikes: string,
 }
 
-
 export default function WorkoutSelectionPage() {
     const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-
     const [loading, setLoading] = React.useState(false);
-    const {
-        control,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<IFormInput>({
+
+    const { control, handleSubmit, formState: { errors } } = useForm<IFormInput>({
         defaultValues: {
             wants: "",
             likes: "",
@@ -44,8 +38,6 @@ export default function WorkoutSelectionPage() {
                     return "ERROR";
                 }
                 new_exercises_list.push({ 'name': exercise[0], 'reps': exercise[1].split(",") });
-                // console.log(exercise[0]);
-                // console.log(exercise[1]);
             }
             return new_exercises_list;
         }
@@ -56,13 +48,8 @@ export default function WorkoutSelectionPage() {
 
     const onSubmit = (data: any) => {
         setLoading(true);
-        console.log(data);
         axios.post(`${apiUrl}/workout_generation`, data)
             .then((response) => {
-                console.log(response.data + "is resp");
-                // 
-                console.log(parseApiOut(response.data));
-                setLoading(false);
                 const parseOut = parseApiOut(response.data);
                 if (parseOut == 'ERROR') {
                     console.log("ERROR");
@@ -83,91 +70,145 @@ export default function WorkoutSelectionPage() {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <View backgroundColor="$background" flex={1} alignItems="center">
-                <YStack padding="$4" space="$4" width="100%">
-                    <Controller
-                        control={control}
-                        rules={{
-                            required: true,
-                        }}
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <YStack space="$2" width="100%">
-                                <Text style={styles.textInForm}>What do you want to achieve?</Text>
-                                <TextInput
-                                    placeholder="Enter your goal"
-                                    onBlur={onBlur}
-                                    onChangeText={onChange}
-                                    value={value}
-                                    style={{ borderColor: 'gray', borderWidth: 1, padding: 12, borderRadius: 10, backgroundColor: 'white', width: '100%' }}
-                                />
-                                {errors.wants && <Text style={{ color: 'red' }}>This is required.</Text>}
-                            </YStack>
-                        )}
-                        name="wants"
-                    />
+        <SafeAreaView style={styles.safeArea}>
+            <ScrollView contentContainerStyle={styles.scrollView}>
+                <View style={styles.container}>
+                    <Text style={styles.title}>Work-out Selector</Text>
 
-                    <Controller
-                        control={control}
-                        rules={{
-                            maxLength: 100,
-                        }}
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <YStack space="$2" width="100%">
-                                <Text style={styles.textInForm}>Exercise preference</Text>
-                                <TextInput
-                                    placeholder="Enter your exercise preference"
-                                    onBlur={onBlur}
-                                    onChangeText={onChange}
-                                    value={value}
-                                    style={{ borderColor: 'gray', borderWidth: 1, padding: 12, borderRadius: 10, backgroundColor: 'white', width: '100%' }}
-                                />
-                                {errors.likes && <Text style={{ color: 'red' }}>Max length is 100.</Text>}
-                            </YStack>
-                        )}
-                        name="likes"
-                    />
+                    <YStack padding="$4" space="$4" width="100%">
 
-                    <Controller
-                        control={control}
-                        rules={{
-                            maxLength: 100,
-                        }}
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <YStack space="$2" width="100%">
-                                <Text style={styles.textInForm}>Exercise dislikes</Text>
-                                <TextInput
-                                    placeholder="Enter your exercise dislikes"
-                                    onBlur={onBlur}
-                                    onChangeText={onChange}
-                                    value={value}
-                                    style={{ borderColor: 'gray', borderWidth: 1, padding: 12, borderRadius: 10, backgroundColor: 'white', width: '100%' }}
-                                />
-                                {errors.dislikes && <Text style={{ color: 'red' }}>Max length is 100.</Text>}
-                            </YStack>
-                        )}
-                        name="dislikes"
-                    />
+                        <Controller
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <YStack space="$2" width="100%">
+                                    <Text style={styles.formLabel}>What do you want to achieve?</Text>
+                                    <TextInput
+                                        placeholder="Enter your goal"
+                                        placeholderTextColor="#A0A0A0"
+                                        onBlur={onBlur}
+                                        onChangeText={onChange}
+                                        value={value}
+                                        style={styles.textInput}
+                                    />
+                                    {errors.wants && <Text style={styles.errorText}>This is required.</Text>}
+                                </YStack>
+                            )}
+                            name="wants"
+                        />
 
-                    <Button onPress={handleSubmit(onSubmit)} theme="primary" borderRadius="$4" width="100%">
-                        Submit
-                    </Button>
-                </YStack>
-            </View>
+                        <Controller
+                            control={control}
+                            rules={{ maxLength: 100 }}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <YStack space="$2" width="100%">
+                                    <Text style={styles.formLabel}>Exercise preference</Text>
+                                    <TextInput
+                                        placeholder="Enter your exercise preference"
+                                        placeholderTextColor="#A0A0A0"
+                                        onBlur={onBlur}
+                                        onChangeText={onChange}
+                                        value={value}
+                                        style={styles.textInput}
+                                    />
+                                    {errors.likes && <Text style={styles.errorText}>Max length is 100.</Text>}
+                                </YStack>
+                            )}
+                            name="likes"
+                        />
+
+                        <Controller
+                            control={control}
+                            rules={{ maxLength: 100 }}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <YStack space="$2" width="100%">
+                                    <Text style={styles.formLabel}>Exercise dislikes</Text>
+                                    <TextInput
+                                        placeholder="Enter your exercise dislikes"
+                                        placeholderTextColor="#A0A0A0"
+                                        onBlur={onBlur}
+                                        onChangeText={onChange}
+                                        value={value}
+                                        style={styles.textInput}
+                                    />
+                                    {errors.dislikes && <Text style={styles.errorText}>Max length is 100.</Text>}
+                                </YStack>
+                            )}
+                            name="dislikes"
+                        />
+
+                        <Button
+                            onPress={handleSubmit(onSubmit)}
+                            style={styles.submitButton}
+                        >
+                            <Text style={styles.buttonText}>Submit</Text>
+                        </Button>
+                    </YStack>
+                </View>
+            </ScrollView>
             {loading && <Loader visible={loading} />}
         </SafeAreaView>
     );
-};
+}
 
 const styles = StyleSheet.create({
-    textInForm: {
-        // borderColor: 'gray',
-        // borderWidth: 1,
-        // padding: 12,
-        // borderRadius: 10,
-        // backgroundColor: 'white',
-        // width: '100%'
-        fontSize: 20,
-        alignSelf: 'center',
-    }
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#1c1c1e', // Dark theme background
+    },
+    scrollView: {
+        paddingHorizontal: 16,
+    },
+    container: {
+        alignItems: 'center',
+        width: '100%',
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#7F5FFF', // Purple color to match the theme
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    formLabel: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: 'white',
+        marginBottom: 4,
+    },
+    textInput: {
+        borderColor: '#4A4A4A',
+        borderWidth: 1,
+        padding: 12,
+        borderRadius: 12,
+        backgroundColor: '#2C2C2E',
+        color: 'white',
+        width: '100%',
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: { width: 0, height: 1 },
+        elevation: 2,
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+    },
+    submitButton: {
+        backgroundColor: '#7F5FFF', // Solid purple color
+        borderRadius: 12,
+        paddingVertical: 12,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 5,
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: '600',
+        fontSize: 18,
+    },
 });
