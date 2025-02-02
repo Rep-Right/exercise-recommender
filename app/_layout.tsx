@@ -7,6 +7,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import "../firebaseConfig";
+
 
 
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -71,9 +73,13 @@ export default function RootLayout() {
   return (
     <TamaguiProvider config={appConfig} defaultTheme='dark'>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack initialRouteName='(tabs)'>
+        <Stack initialRouteName='signin'>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
+          <Stack.Screen name="workout-selection-pages" options={{ headerShown: false }} />
+          <Stack.Screen name="rep-info" options={{ headerShown: false }} />
+          <Stack.Screen name="signin" options={{ headerShown: false }}></Stack.Screen>
+          <Stack.Screen name="camera" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>
