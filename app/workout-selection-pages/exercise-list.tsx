@@ -24,11 +24,11 @@ const ExerciseList = () => {
     const data = JSON.parse(params.exercises as string) as { 'name': string, 'reps': Array<string> }[];
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <View backgroundColor="$background" flex={1}>
                 <ScrollView>
                     {data.map((exercise, index) => (
-                        <Card key={index} style={{ margin: 10 }} onPress={() => router.push({ pathname: "/(tabs)/workout-selection-pages/list-with-videos", params: { exercise: JSON.stringify(exercise) } })}>
+                        <Card key={index} style={{ margin: 10 }} onPress={() => router.push({ pathname: "/workout-selection-pages/list-with-videos", params: { exercise: JSON.stringify(exercise) } })}>
                             <CardHeader>
                                 <Text>{exercise.name}</Text>
                             </CardHeader>

@@ -69,7 +69,7 @@ export default function WorkoutSelectionPage() {
                     setLoading(false);
                     return;
                 }
-                router.push({ pathname: "/(tabs)/workout-selection-pages/exercise-list", params: { exercises: JSON.stringify(parseOut) } });
+                router.push({ pathname: "/workout-selection-pages/exercise-list", params: { exercises: JSON.stringify(parseOut) } });
             })
             .catch((error) => {
                 if (axios.isAxiosError(error)) {

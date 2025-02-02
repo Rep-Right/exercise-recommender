@@ -76,6 +76,7 @@ export default function RootLayout() {
         <Stack initialRouteName='(tabs)'>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
+          <Stack.Screen name="workout-selection-pages" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>
