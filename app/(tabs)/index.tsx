@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styled, Text, View } from 'tamagui';
 
@@ -9,7 +10,7 @@ const StyledSafeAreaView = styled(SafeAreaView, {
 
 export default function HomeScreen() {
 
-    const stuff = ["Shoulder Press", "Squat", "Deadlift", "Tricep pushdown"];
+    const stuff = [{ name: "Shoulder Press", uri: 'shoulder-press' }, { name: "Squat", uri: 'squat' }, { name: "Deadlift", uri: 'deadlift' }, { name: "Tricep pushdown", uri: 'tricep-pushdown' }];
 
     return (
         <StyledSafeAreaView>
@@ -39,8 +40,9 @@ export default function HomeScreen() {
                             borderRadius="$4"
                             alignItems="center"
                             justifyContent="center"
+                            onPress={() => { router.push({ pathname: "/camera", params: { exercise: item.uri } }) }}
                         >
-                            <Text>{item}</Text>
+                            <Text>{item.name}</Text>
                         </View>
                     ))}
                 </View>

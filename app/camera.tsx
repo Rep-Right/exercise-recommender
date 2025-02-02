@@ -8,7 +8,7 @@ import {
     useCameraPermissions,
     useMicrophonePermissions
 } from "expo-camera";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { getAuth, signOut } from "firebase/auth";
 import { doc, getFirestore, setDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
@@ -39,6 +39,7 @@ const db = getFirestore();
 const storage = getStorage();
 
 export default function CameraViewScreen() {
+    const params = useLocalSearchParams();
     const apiUrl = process.env.EXPO_PUBLIC_API_URL;
     const [facing, setFacing] = useState<CameraType>("back");
     const [permission, requestPermission] = useCameraPermissions();
@@ -77,7 +78,7 @@ export default function CameraViewScreen() {
         });
         // router.replace
         router.push({
-            pathname: "/(app)/(tabs)/rep-info/output",
+            pathname: "/rep-info/output",
             params: { data: JSON.stringify(data), summary: summary }, // { data: data } satisfies { data: myItemProps },
         });
     };
@@ -164,14 +165,14 @@ export default function CameraViewScreen() {
                 console.log(apiUrl);
             });
             // await fetch(`${apiUrl}/videos`, {})
-            console.log(`${apiUrl}/process_video`);
+            console.log(`${apiUrl}/${params.exercise}`);
             axios
-                .get(`${apiUrl}/process_video`, {
+                .get(`${apiUrl}/${params.exercise}`, {
                     // TODO: need to test this, consider changing to POST, and deploy.
                     headers: {
                         Authorization: `Bearer ${await auth.currentUser.getIdToken()}`,
                     },
-                    params: { videoName: "1733184240033.mp4" }, // // videoName 'barbell_biceps_curl_15.mp4'  "1731126191737.mp4" "1733184240033.mp4"
+                    params: { videoName: videoName }, // // videoName 'barbell_biceps_curl_15.mp4'  "1731126191737.mp4" "1733184240033.mp4"
                 })
                 .then((response) => {
                     setLoading(false);
@@ -180,28 +181,33 @@ export default function CameraViewScreen() {
                         alert("No reps found");
                         return;
                     }
-                    const summary = response.data['summary'] ?? '';
-                    if (Object.keys(response.data.left).length === 0 || Object.keys(response.data.right).length === 0) {
-                        if (Object.keys(response.data.left).length === 0 && Object.keys(response.data.right).length === 0) {
-                            alert("No reps found");
-                            return;
-                        }
-                        if (Object.keys(response.data.left).length === 0) {
-                            handleRedirect(response.data['right'], summary, videoName);
-                            return;
-                        }
-                        handleRedirect(response.data['left'], summary, videoName);
+                    if (response.data['reps'] === undefined || response.data['reps'] === null || response.data['reps'].length === 0) {
+                        alert("No reps found");
                         return;
                     }
-                    let largerList: any = null;
-                    // if (response.data['left'] && !(response.data['right'] && Object.keys(response.data.left).length >=)) {
-                    //   largerList = response.data['left'];
+                    const summary = response.data['summary'] ?? '';
+                    // if (Object.keys(response.data.left).length === 0 || Object.keys(response.data.right).length === 0) {
+                    //     if (Object.keys(response.data.left).length === 0 && Object.keys(response.data.right).length === 0) {
+                    //         alert("No reps found");
+                    //         return;
+                    //     }
+                    //     if (Object.keys(response.data.left).length === 0) {
+                    //         handleRedirect(response.data['right'], summary, videoName);
+                    //         return;
+                    //     }
+                    //     handleRedirect(response.data['left'], summary, videoName);
+                    //     return;
                     // }
-                    if (Object.keys(response.data['left']).length >= Object.keys(response.data['right']).length) {
-                        largerList = response.data['left'];
-                    }
-                    largerList = response.data['right'];
-                    handleRedirect(largerList, summary, videoName);
+                    // let largerList: any = null;
+                    // // if (response.data['left'] && !(response.data['right'] && Object.keys(response.data.left).length >=)) {
+                    // //   largerList = response.data['left'];
+                    // // }
+                    // if (Object.keys(response.data['left']).length >= Object.keys(response.data['right']).length) {
+                    //     largerList = response.data['left'];
+                    // }
+                    // largerList = response.data['right'];
+                    // handleRedirect(largerList, summary, videoName);
+                    handleRedirect(response.data['reps'], summary, videoName);
 
 
                     // if (!response.data['left'] || Object.keys(response.data.left).length === 0) {
