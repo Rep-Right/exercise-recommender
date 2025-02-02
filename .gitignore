@@ -41,3 +41,5 @@ app-example
 ios/
 android/
 exercise-recommender/
+firebaseConfig.js
+.env
