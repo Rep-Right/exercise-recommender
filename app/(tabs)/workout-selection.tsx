@@ -16,7 +16,7 @@ interface IFormInput {
 
 
 export default function WorkoutSelectionPage() {
-    const apiUrl = "http://35.21.203.224:8000";//process.env.EXPO_PUBLIC_API_URL;
+    const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
     const [loading, setLoading] = React.useState(false);
     const {
